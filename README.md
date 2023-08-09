@@ -2,7 +2,7 @@
 
 ## Подготовка инфраструктуры
 
-Запускаем контейнер с СУБД postgresql
+Запускаем контейнер с postgresql
 
 ``` sh
 docker-compose up -d
@@ -14,7 +14,7 @@ docker-compose up -d
 docker exec -it postgres bash
 ```
 
-Подключаемся к СУБД postgresql из контейнера
+Подключаемся к postgresql из контейнера
 
 ``` sh
 psql -U postgres
@@ -37,14 +37,14 @@ insert into users (id, name, active) values
 
 ## Эксперимент
 
-Запускаем 'вредную' утилиту шутника
+Запускаем _virus_
 
 ``` sh
-DATABASE_URL=postgres://postgres:password@localhost:5432/postgres go run cmd/jocker/main.go
+DATABASE_URL=postgres://postgres:password@localhost:5432/postgres go run cmd/virus/main.go
 ```
 
-Несколько раз запускаем утилиту админа, ловим баг
+Несколько раз запускаем _printer_, ловим баг
 
 ``` sh
-DATABASE_URL=postgres://postgres:password@localhost:5432/postgres go run cmd/admin/main.go
+DATABASE_URL=postgres://postgres:password@localhost:5432/postgres go run cmd/printer/main.go
 ```
