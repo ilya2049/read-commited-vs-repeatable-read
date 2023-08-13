@@ -1,4 +1,4 @@
-# Read commited vs repeatable read
+# Сравнение времени выполнения только читающих транзакций
 
 ## Подготовка инфраструктуры
 
@@ -20,38 +20,7 @@ docker exec -it postgres bash
 psql -U postgres
 ```
 
-Создаем и заполняем таблицу с пользователями
-
-``` sql
-create table users (
-  id int primary key,
-  name text not null,
-  active bool not null
-);
-
-insert into users (id, name, active) values 
-(1, 'Alex', true), 
-(2, 'Sam', true), 
-(3, 'Felix', true);
-```
-
-## Демонстрания аномалии _несогласованное чтение_
-
-Запускаем _virus_
-
-``` sh
-DATABASE_URL=postgres://postgres:password@localhost:5432/postgres go run cmd/virus/main.go
-```
-
-Несколько раз запускаем _printer_, ловим баг
-
-``` sh
-DATABASE_URL=postgres://postgres:password@localhost:5432/postgres go run cmd/printer/main.go
-```
-
-## Сравниваем время выполнения только читающих транзакций
-
-Создаем таблицу _passwords_ для тестов.
+Создаем таблицу _passwords_.
 
 ``` sql
 create table passwords as
@@ -60,19 +29,19 @@ select
   substr(md5(random()::text), 0, 25) as hash;
 ```
 
-Уровень изоляции Read Commited
+Эксперимент 1. Уровень изоляции Read Commited
 
 ``` sh
 DATABASE_URL=postgres://postgres:password@localhost:5432/postgres go run cmd/txrace/main.go -mode=read-committed -reads=10
 ```
 
-Уровень изоляции Repeatable Read
+Эксперимент 2. Уровень изоляции Repeatable Read
 
 ``` sh
 DATABASE_URL=postgres://postgres:password@localhost:5432/postgres go run cmd/txrace/main.go -mode=repeatable-read -reads=10
 ```
 
-Уровень изоляции Repeatable Read, режим доступа Read Only
+Эксперимент 3. Уровень изоляции Repeatable Read, режим доступа Read Only
 
 ``` sh
 DATABASE_URL=postgres://postgres:password@localhost:5432/postgres go run cmd/txrace/main.go -mode=repeatable-read-read-only -reads=10
